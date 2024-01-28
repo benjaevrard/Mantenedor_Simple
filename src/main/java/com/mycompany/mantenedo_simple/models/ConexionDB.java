@@ -1,27 +1,33 @@
 package com.mycompany.mantenedo_simple.models;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  *
  * @author Benjamin Evrard
  */
 public class ConexionDB {
-    // Parámetros de conexión
-    static final String URL = "jdbc:mysql://localhost:3306/mantenedor_simple";
-    static final String USUARIO = "bevrardc";
-    static final String CONTRASENA = "L0ret0310@#@#";
+    static final Properties props = new Properties();
+    
+    static {
+        try (InputStream input = new FileInputStream("config.properties")) {
+            props.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     // Método para establecer la conexión
     public static Connection Conectar() {
         Connection conexion = null;
         try {
-            // Registrar el driver JDBC
             Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            // Establecer la conexión
-            conexion = DriverManager.getConnection(URL, USUARIO, CONTRASENA);
+            conexion = DriverManager.getConnection(props.getProperty("url"), props.getProperty("usuario"), props.getProperty("contrasena"));
             System.out.println("Conexión exitosa.");
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error al conectar a la base de datos: " + e.getMessage());
